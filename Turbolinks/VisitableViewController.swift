@@ -4,6 +4,9 @@ public class VisitableViewController: UIViewController, Visitable {
     public weak var visitableDelegate: VisitableDelegate?
 
     public var visitableURL: NSURL!
+    public var accessToken: String?
+    public var needAuth = false
+    public var handlerCookie = true
 
     public convenience init(URL: NSURL) {
         self.init()

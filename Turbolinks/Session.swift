@@ -66,12 +66,22 @@ public class Session: NSObject {
         visitable.visitableDelegate = self
 
         let visit: Visit
+        let vc = visitable.visitableViewController as! VisitableViewController
 
-        if initialized {
+        if(vc.needAuth){
+          if initialized && vc.accessToken != nil {
             visit = JavaScriptVisit(visitable: visitable, action: action, webView: _webView)
             visit.restorationIdentifier = restorationIdentifierForVisitable(visitable)
-        } else {
+          } else {
             visit = ColdBootVisit(visitable: visitable, action: action, webView: _webView)
+          }
+        }else{
+          if initialized {
+            visit = JavaScriptVisit(visitable: visitable, action: action, webView: _webView)
+            visit.restorationIdentifier = restorationIdentifierForVisitable(visitable)
+          } else {
+            visit = ColdBootVisit(visitable: visitable, action: action, webView: _webView)
+          }
         }
 
         currentVisit?.cancel()

@@ -139,9 +139,21 @@ class ColdBootVisit: Visit, WKNavigationDelegate, WebViewPageLoadDelegate {
         webView.navigationDelegate = self
         webView.pageLoadDelegate = self
 
-        let request = NSURLRequest(URL: location)
-        navigation = webView.loadRequest(request)
+      
+        let vc = visitable as! VisitableViewController
+        let request = NSMutableURLRequest(URL: location)
+        
+        if(vc.accessToken != nil){
+          let basicAuthCredentials = vc.accessToken?.dataUsingEncoding(NSUTF8StringEncoding)
+          let base64AuthCredentials = basicAuthCredentials!.base64EncodedStringWithOptions([])
+          request.setValue("Token token=\"\(base64AuthCredentials)\"", forHTTPHeaderField: "Authorization")
+        }else{
+          if(!vc.handlerCookie){
+            request.HTTPShouldHandleCookies = false
+          }
+        }
 
+        navigation = webView.loadRequest(request)
         delegate?.visitDidStart(self)
         startRequest()
     }
