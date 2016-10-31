@@ -136,25 +136,25 @@ class ColdBootVisit: Visit, WKNavigationDelegate, WebViewPageLoadDelegate {
     fileprivate var navigation: WKNavigation?
 
     override fileprivate func startVisit() {
-        webView.navigationDelegate = self
-        webView.pageLoadDelegate = self
-      
-        let vc = visitable as! VisitableViewController
-        let request = NSMutableURLRequest(url: location)
+      webView.navigationDelegate = self
+      webView.pageLoadDelegate = self
+    
+      let vc = visitable as! VisitableViewController
+      let request = NSMutableURLRequest(url: location)
         
-        if(vc.accessToken != nil){
-          let basicAuthCredentials = vc.accessToken?.dataUsingEncoding(NSUTF8StringEncoding)
-          let base64AuthCredentials = basicAuthCredentials!.base64EncodedStringWithOptions([])
-          request.setValue("Token token=\"\(base64AuthCredentials)\"", forHTTPHeaderField: "Authorization")
-        }else{
-          if(!vc.handlerCookie){
-            request.HTTPShouldHandleCookies = false
-          }
+      if(vc.accessToken != nil){
+        let basicAuthCredentials = vc.accessToken?.data(using: String.Encoding.utf8)
+        let base64AuthCredentials = basicAuthCredentials!.base64EncodedString(options: [])
+        request.setValue("Token token=\"\(base64AuthCredentials)\"", forHTTPHeaderField: "Authorization")
+      }else{
+        if(!vc.handlerCookie){
+          request.httpShouldHandleCookies = false
         }
+      }
       
-        navigation = webView.load(request)
-        delegate?.visitDidStart(self)
-        startRequest()
+      navigation = webView.load(request as URLRequest)
+      delegate?.visitDidStart(self)
+      startRequest()
     }
 
     override fileprivate func cancelVisit() {
